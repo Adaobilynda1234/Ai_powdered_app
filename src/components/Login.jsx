@@ -19,9 +19,46 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (values, { setSubmitting }) => {};
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setError("");
+    try {
+      const { user, error: authError } = await (isRegistering
+        ? registerUser(values.email, values.password)
+        : loginUser(values.email, values.password));
 
-  const handleGoogleSignIn = async () => {};
+      if (authError) {
+        setError(authError);
+        console.log(authError)
+        return;
+      }
+
+      if (user) {
+        navigate("/chat");
+      }
+    } catch (err) {
+      setError(err.message);
+      console.log(authError)
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError("");
+    try {
+      const { user, error: authError } = await signInWithGoogle();
+      if (authError) {
+        setError(authError)
+        console.log(authError)
+        return;
+      }
+      if (user) {
+        navigate("/chat");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
