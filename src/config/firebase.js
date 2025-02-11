@@ -6,6 +6,7 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
+import { getMessaging } from "firebase/messaging";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,13 +17,14 @@ const firebaseConfig = {
   projectId: "ai-powered-app-a938d",
   storageBucket: "ai-powered-app-a938d.firebasestorage.app",
   messagingSenderId: "177621336489",
-  appId: "1:177621336489:web:f01202cc1a8ccd3a7c44b8"
+  appId: "1:177621336489:web:f01202cc1a8ccd3a7c44b8",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const messaging = getMessaging(app);
 
 // Set persistence correctly using imported functions
 setPersistence(auth, browserLocalPersistence).catch((error) => {

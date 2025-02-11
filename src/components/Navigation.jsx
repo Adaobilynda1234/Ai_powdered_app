@@ -5,9 +5,20 @@ import { logoutUser } from "../utils/auth";
 import { useState, useEffect, useRef } from "react";
 
 function Navigation() {
-  const [user] = [];
+  const [user] = useAuthState(auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const NavLink = ({ to, children }) => (
     <Link

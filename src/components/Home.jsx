@@ -1,5 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { FaRobot, FaCode, FaLock, FaGithub, FaLightbulb, FaBrain } from "react-icons/fa";
+import {
+  FaRobot,
+  FaCode,
+  FaLock,
+  FaGithub,
+  FaLightbulb,
+  FaBrain,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 
 function Landing() {
@@ -48,21 +55,25 @@ function Landing() {
             </div>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             variants={itemVariants}
             className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text"
           >
             AI-Powered Developer Assistant
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             variants={itemVariants}
             className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed"
           >
-            Your intelligent programming companion that understands your code, solves problems, and helps you build better software.
+            Your intelligent programming companion that understands your code,
+            solves problems, and helps you build better software.
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex justify-center gap-6 flex-wrap">
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-center gap-6 flex-wrap"
+          >
             <button
               onClick={() => navigate("/auth")}
               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700
@@ -87,7 +98,7 @@ function Landing() {
           </motion.div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -117,7 +128,7 @@ function Landing() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate="visible" 
+          animate="visible"
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
         >
           <StatCard number="100+" label="Programming Languages" />
@@ -137,8 +148,10 @@ function FeatureCard({ icon, title, description, gradient }) {
       className={`bg-gray-800/40 backdrop-blur-lg p-8 rounded-2xl border border-gray-700/50
                 hover:border-gray-600/50 transition-all duration-300 group`}
     >
-      <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center
-                    transform group-hover:scale-110 transition-transform duration-300`}>
+      <div
+        className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center
+                    transform group-hover:scale-110 transition-transform duration-300`}
+      >
         <div className="text-white text-2xl">{icon}</div>
       </div>
       <h3 className="text-white text-xl font-semibold mt-6 mb-4">{title}</h3>
@@ -162,7 +175,7 @@ function StatCard({ number, label }) {
 }
 
 // Add these animations to your global CSS or tailwind.config.js
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
   @keyframes blob {
     0% { transform: translate(0px, 0px) scale(1); }

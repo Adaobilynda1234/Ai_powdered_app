@@ -24,7 +24,19 @@ function Chat() {
   const [user] = useAuthState(auth);
 
   useEffect(() => {
-    `Hello there! I'm here to help you with your programming questions. Feel free to ask me anything related to programming, and I'll do my best to assist you.
+    if (!user) return;
+
+    const initializeChat = async () => {
+      const messagesRef = collection(db, "messages");
+      const userMessagesQuery = query(
+        messagesRef,
+        where("userId", "==", user.uid)
+      );
+      const snapshot = await getDocs(userMessagesQuery);
+
+      if (snapshot.empty) {
+        await addDoc(messagesRef, {
+          text: `Hello there! I'm here to help you with your programming questions. Feel free to ask me anything related to programming, and I'll do my best to assist you.
 
 Here are some examples of questions you can ask:
 
@@ -44,10 +56,88 @@ I'm particularly good at:
 - Providing code examples with explanations
 - Suggesting best practices and design patterns
 
-Just let me know what you're working on, and I'll do my best to help!`;
-  }, []);
+Just let me know what you're working on, and I'll do my best to help!`,
+          timestamp: serverTimestamp(),
+          role: "ai",
+          userId: user.uid,
+          isWelcomeMessage: true,
+        });
+      }
+    };
 
-  const handleSubmit = async (e) => {};
+    initializeChat();
+
+    const q = query(
+      collection(db, "messages"),
+      where("userId", "==", user.uid),
+      orderBy("timestamp", "asc")
+    );
+
+    const unsubscribe = onSnapshot(q, {
+      next: (snapshot) => {
+        const messageData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setMessages(messageData);
+        setIndexReady(true);
+      },
+      error: (error) => {
+        console.error("Error fetching messages:", error);
+        setIndexReady(true);
+      },
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const userMessageDoc = await addDoc(collection(db, "messages"), {
+        text: newMessage,
+        timestamp: serverTimestamp(),
+        role: "user",
+        userId: user.uid,
+      });
+
+      const currentModel = initializeModel();
+      if (!currentModel) {
+        throw new Error("API key not found. Please set up your API key.");
+      }
+
+      const result = await currentModel.generateContent(
+        `You are a helpful programming assistant. Please provide well-formatted responses with code examples when appropriate. 
+         User question: ${newMessage}`
+      );
+      const response = result.response.text();
+
+      await addDoc(collection(db, "messages"), {
+        text: response,
+        timestamp: serverTimestamp(),
+        role: "ai",
+        userId: user.uid,
+        replyTo: userMessageDoc.id,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          text: "Error: " + error.message,
+          role: "ai",
+          userId: user.uid,
+        },
+      ]);
+    } finally {
+      setNewMessage("");
+      setIsLoading(false);
+    }
+  };
 
   const MessageContent = ({ text }) => {
     return (

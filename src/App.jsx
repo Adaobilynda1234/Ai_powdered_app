@@ -15,6 +15,12 @@ import "./utils/index.css";
 import ApiKeyPrompt from "./components/ApiKeyPrompt";
 
 function App() {
+  const [user] = useAuthState(auth);
+
+  const hasApiKey = () => {
+    return !!localStorage.getItem("gemini_api_key");
+  };
+
   return (
     <Router>
       <div className="app">
@@ -25,16 +31,19 @@ function App() {
             path="/chat"
             element={
               <PrivateRoute>
-                <Chat />
+                {hasApiKey() ? <Chat /> : <Navigate to="/api-key" />}
               </PrivateRoute>
             }
           />
-          <Route path="/auth" element={<Login />} />
+          <Route
+            path="/auth"
+            element={user ? <Navigate to="/api-key" /> : <Login />}
+          />
           <Route
             path="/api-key"
             element={
               <PrivateRoute>
-                <ApiKeyPrompt />
+                {hasApiKey() ? <Navigate to="/chat" /> : <ApiKeyPrompt />}
               </PrivateRoute>
             }
           />
